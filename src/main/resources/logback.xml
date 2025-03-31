@@ -1,0 +1,58 @@
+<configuration>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Definición de diferentes appenders para diferentes clases -->
+    <appender name="CargaImagenController" class="ch.qos.logback.core.FileAppender">
+        <file>logs/CargaImagenController.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="security" class="ch.qos.logback.core.FileAppender">
+        <file>logs/security.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="AI" class="ch.qos.logback.core.FileAppender">
+        <file>logs/AI.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CargaImagenes" class="ch.qos.logback.core.FileAppender">
+        <file>logs/CargaImagenes.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.imageProcessor.controller.CargaImagenController" level="DEBUG" additivity="false">
+        <appender-ref ref="CargaImagenController" />
+    </logger>
+
+    <logger name="com.imageProcessor.security.JwtFilter" level="DEBUG" additivity="false">
+        <appender-ref ref="security" />
+    </logger>
+
+    <logger name="com.imageProcessor.service.AIProcessingService" level="DEBUG" additivity="false">
+        <appender-ref ref="AI" />
+    </logger>
+
+    <logger name="com.imageProcessor.service.CargaImagenService" level="DEBUG" additivity="false">
+        <appender-ref ref="CargaImagenes" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="Console" />
+    </root>
+
+</configuration>

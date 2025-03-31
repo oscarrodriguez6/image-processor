@@ -1,0 +1,101 @@
+.thumbnail {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.thumbnail:hover {
+    transform: scale(1.05);
+}
+.horizontal {
+    display: flex;
+    justify-content: center;
+}
+.zoomable {
+    max-width: 100%;
+    max-height: 100vh; /* Altura máxima igual a la del viewport */
+    object-fit: contain; /* Mantiene la proporción dentro del modal */
+    cursor: zoom-in;
+    transition: transform 0.3s ease-in-out; /* Animación de zoom */
+}
+.modal-dialog-fullscreen {
+    margin: 0;
+    max-width: 100%;
+    max-height: 100%;
+}
+.modal-content-fullscreen {
+    height: 100vh;
+}
+.modal-body-fullscreen {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+.img-fullscreen {
+    max-width: 100%;
+    max-height: 100%;
+}
+.month-item {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 8px;  /* Añade separación entre los meses */
+    background: #f8f9fa;
+    transition: background 0.3s;
+}
+.month-item:hover {
+    background: #e9ecef;
+}
+.month-header {
+    font-size: 1.5em;
+    font-weight: bold;
+    background: #f0f0f0;
+    text-align: center;
+    padding: 10px;
+    margin: 20px 0;
+    width: 100%;
+    display: block;
+    border-top: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    clear: both;
+}
+.col-md-4, .col-lg-3 {
+    padding-bottom: 15px; /* Espacio entre filas */
+}
+#searchForm{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 20px;
+}
+
+#CargarForm{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 230px;
+}
+
+#mapaForm{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 440px;
+}
+
+/* Estilos para el overlay de carga */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+}
+
+.loading-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
