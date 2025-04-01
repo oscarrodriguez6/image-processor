@@ -14,9 +14,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/")
                 .setCachePeriod(0);  // Desactiva la caché del navegador
+
+        registry.addResourceHandler("/uploads/miniaturas/**")
+                .addResourceLocations("file:uploads/miniaturas/")
+                .setCachePeriod(0);  // También desactiva la caché para miniaturas
     }
 
-    public static String getStaticResourceUrl(String resourcePath) {
-        return "/static/" + resourcePath + VERSION;
-    }
+//    public static String getStaticResourceUrl(String resourcePath) {
+//       return "/uploads/miniaturas/" + resourcePath + VERSION;
+//    }
 }

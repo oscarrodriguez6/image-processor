@@ -1,13 +1,11 @@
 package com.imageProcessor.utils;
 
 import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.mp4.Mp4MetadataReader;
 import com.drew.lang.Rational;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.iptc.IptcDirectory;
-import com.drew.metadata.mp4.Mp4Directory;
 import com.imageProcessor.service.CargaImagenService;
 
 import java.io.File;
@@ -27,11 +25,7 @@ public class MetadataExtractor {
         try {
             Metadata metadata;
             
-            if (esArchivoDeVideo(imagen)) {
-                metadata = Mp4MetadataReader.readMetadata(imagen);
-            } else {
-                metadata = ImageMetadataReader.readMetadata(imagen);
-            }
+            metadata = ImageMetadataReader.readMetadata(imagen);
             
             // Metadatos EXIF: Incluye detalles como la fecha y hora de la imagen, la apertura de la lente, la sensibilidad ISO, y más.
             ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
@@ -70,13 +64,6 @@ public class MetadataExtractor {
 				e.getMessage();
             }
 
-            // Metadatos específicos de video
-            Mp4Directory mp4Directory = metadata.getFirstDirectoryOfType(Mp4Directory.class);
-            if (mp4Directory != null) {
-                metadataMap.put("Duración", mp4Directory.getLong(Mp4Directory.TAG_DURATION));
-                metadataMap.put("Fecha", mp4Directory.getDate(Mp4Directory.TAG_CREATION_TIME));
-            }
- 
             // Contiene datos sobre la miniatura de la imagen
 //            ExifThumbnailDirectory directory4 = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory.class);
             
@@ -140,8 +127,4 @@ public class MetadataExtractor {
         return ref.equals("N") ? degrees : -degrees;
     }
 
-    public static boolean esArchivoDeVideo(File archivo) {
-        String nombreArchivo = archivo.getName().toLowerCase();
-        return nombreArchivo.endsWith(".mp4") || nombreArchivo.endsWith(".mov") || nombreArchivo.endsWith(".avi");
-    }
 }

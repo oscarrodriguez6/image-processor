@@ -44,7 +44,8 @@ public class AuthController {
                 System.out.println("Token para la cookie: " + token);
                 Cookie cookie = new Cookie("token", token);
                 cookie.setHttpOnly(true);
-                cookie.setSecure(true);
+                cookie.setSecure(false);
+                cookie.setAttribute("SameSite", "Lax");
                 cookie.setPath("/");
                 cookie.setMaxAge(3600);
                 System.out.println("Antes del response: " + cookie.toString());

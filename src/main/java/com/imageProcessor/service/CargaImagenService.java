@@ -32,10 +32,8 @@ import net.coobird.thumbnailator.Thumbnails;
 public class CargaImagenService {
 
 	private static final Logger log = LoggerFactory.getLogger(CargaImagenService.class);
-	private static String RUTA_BASE ="src/main/resources/static/"; 
-	private static String RUTA_BASE2 = "src\\main\\resources\\static\\";
+	private static final String UPLOAD_DIR = "uploads/miniaturas/";
     private static final int BATCH_SIZE = 200;
-    private static final String FFMPEG_PATH = "src/main/resources/ffmpeg/ffmpeg"; 
 	
     @Autowired
     private ImageService imagenService;
@@ -388,44 +386,23 @@ public class CargaImagenService {
 */
 	
 	private String generarMiniatura(String rutaOriginal, String nombreArchivo, File imagen) throws IOException {
-		
-		String ruta = rutaOriginal.replace(nombreArchivo,"");
-        String carpetaMiniaturas = RUTA_BASE + "thumbnails/" + ruta.substring(3, ruta.length());  // Cambia esto según tu estructura
-        File directorioMiniaturas = new File(carpetaMiniaturas);
-        if (!directorioMiniaturas.exists()) {
-            directorioMiniaturas.mkdirs(); // Crear directorio si no existe
-        }
+	    
+	    String carpetaMiniaturas = Paths.get(UPLOAD_DIR).toString();
+	    File directorioMiniaturas = new File(carpetaMiniaturas);
+	    
+	    if (!directorioMiniaturas.exists()) {
+	        directorioMiniaturas.mkdirs(); // Crear directorio si no existe
+	    }
 
-        String rutaMiniatura = Paths.get(carpetaMiniaturas, "thumb_" + nombreArchivo).toString();
+	    String rutaMiniatura = Paths.get(carpetaMiniaturas, "thumb_" + nombreArchivo).toString();
 
-        if (MetadataExtractor.esArchivoDeVideo(imagen)){
-        	ProcessBuilder processBuilder = new ProcessBuilder(
-                    FFMPEG_PATH,
-                    "-i", rutaOriginal,// Archivo de entrada
-                    "-ss", "00:00:01", // Segundos desde el inicio (puedes cambiarlo)
-                    "-frames:v", "1",  // Solo una imagen
-                    "-q:v", "2",       // Calidad de la imagen (1-31, donde 1 es mejor)
-                    rutaMiniatura
-            );
+	    Thumbnails.of(imagen)
+	              .size(600, 600)      // Tamaño de la miniatura
+	              .outputQuality(0.7)  // Reducir calidad para optimizar
+	              .toFile(new File(rutaMiniatura));
 
-        	processBuilder.redirectErrorStream(true);
-            Process process = processBuilder.start();
-            try {
-            	process.waitFor();  // Esperar a que termine el proceso
-            } catch (InterruptedException e) {
-            	Thread.currentThread().interrupt();
-                throw new IOException("Error al generar miniatura", e);
-            }
-            
-        } else {
-        Thumbnails.of(new File(rutaOriginal))
-                  .size(600, 600)      // Tamaño de la miniatura
-                  .outputQuality(0.7)  // Reducir calidad para optimizar
-                  .toFile(new File(rutaMiniatura));
-        }
-        
-        return rutaMiniatura.replace(RUTA_BASE2, "");
-    }
+	    return "/uploads/miniaturas/thumb_" + nombreArchivo; // URL accesible desde el frontend
+	}
 
     @Transactional
     public void guardarBatch(List<Image> batch) {

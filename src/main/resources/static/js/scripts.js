@@ -86,7 +86,8 @@ function cargarImagenes() {
 			
 			    // Determinar si la imagen es horizontal o vertical y aplicar la clase correspondiente
 			    let imgElement = document.createElement("img");
-			    imgElement.src = img.urlMiniatura + "?v=" + new Date().getTime(); // Evita caché;
+			    imgElement.src = img.urlMiniatura;
+//			    imgElement.src = "/uploads/miniaturas/" + img.urlMiniatura + "?v=" + new Date().getTime();
 			    imgElement.classList.add("thumbnail", "img-fluid");
 			
 			    if (img.ancho > img.alto) { // Ajustar la lógica según las propiedades de tu objeto img
@@ -133,48 +134,35 @@ async function cargarArchivos() {
     const carpetaFiles = document.getElementById("cargarCarpeta").files;
     const individualFiles = document.getElementById("CargarImagenes").files;
 
-    // Separar imágenes y vídeos
+    // Filtrar solo imágenes
     const imagenes = [];
-    const videos = [];
 
     for (let i = 0; i < carpetaFiles.length; i++) {
         const file = carpetaFiles[i];
         if (file.type.startsWith("image/")) {
             imagenes.push(file);
-        } else if (file.type.startsWith("video/")) {
-            videos.push(file);
         }
     }
 
     for (let i = 0; i < individualFiles.length; i++) {
-        imagenes.push(individualFiles[i]);
+        const file = individualFiles[i];
+        if (file.type.startsWith("image/")) {
+            imagenes.push(file);
+        }
     }
 
     // Añadir imágenes a formData
     imagenes.forEach(img => formData.append("files", img, img.webkitRelativePath || img.name));
-
-    // Procesar y añadir vídeos comprimidos
-    for (let i = 0; i < videos.length; i++) {
-        const compressedVideo = await procesarVideo(videos[i]);
-        if (compressedVideo) {
-            formData.append("files", compressedVideo, videos[i].name);
-        }
-    }
 
     mostrarLoadingOverlay();
 
     fetch('/imagenes/carga-masiva', { 
         method: 'POST',
         body: formData
-					 
-																		
-			
     })
     .then(response => {
         if (!response.ok) {
             return response.json().then(error => { throw new Error(error.error); });
-											 
-			   
         }
         return response.json();
     })
@@ -211,32 +199,3 @@ function mostrarMensajeExito(mensaje) {
     successDiv.textContent = mensaje;
     successDiv.style.display = "block";
 }
-
-// Procesar video con FFmpeg.js
-async function procesarVideo(videoFile) {
-
-	console.time("Tiempo de compresión"); // Inicia el temporizador
-    console.log("Procesando video:", videoFile.name);
-
-    // Cargar FFmpeg.js
-    const { createFFmpeg, fetchFile } = FFmpeg;
-    const ffmpeg = createFFmpeg({ log: true });
-
-    if (!ffmpeg.isLoaded()) {
-        await ffmpeg.load();
-    }
-
-    // Cargar el archivo de video en FFmpeg
-    await ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
-
-    // Comprimir con H.264 y reducir resolución a 720p si es necesario
-    await ffmpeg.run('-i', 'input.mp4', '-vf', 'scale=-1:720', '-b:v', '1500k', '-preset', 'fast', '-c:a', 'aac', '-b:a', '128k', '-map_metadata', '0', 'output.mp4');
-
-    // Obtener el archivo comprimido
-    const data = ffmpeg.FS('readFile', 'output.mp4');
-
-    console.timeEnd("Tiempo de compresión"); // Finaliza y muestra el tiempo en consola
-    // Convertirlo a un Blob y devolverlo
-    return new File([data.buffer], videoFile.name, { type: 'video/mp4' });
-}
-
