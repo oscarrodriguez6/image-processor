@@ -43,7 +43,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/login", "/register", "/error").permitAll() // Permitir todas estas rutas sin autenticación
                 .requestMatchers("/usuarios/login").permitAll() // Permitir la API de login
                 .requestMatchers("/usuarios/registro").permitAll() // Permitir la API de login
-                .requestMatchers("/ffmpeg/**").permitAll() // Permitir las rutas de FFmpeg
                 .anyRequest().authenticated() // Proteger cualquier otra ruta
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
@@ -56,19 +55,8 @@ public class SecurityConfig {
                     .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"))
                 );        
 
-    // Configurar cabeceras solo para las rutas de FFmpeg
-
-        
-
-    http.securityMatcher("/ffmpeg/**")
-	        .headers(headers -> headers
-	            .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"))
-	            .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "unsafe-none"))
-	        );
 	    return http.build();
     }
-
-
         
     @Bean
     public PasswordEncoder passwordEncoder() {

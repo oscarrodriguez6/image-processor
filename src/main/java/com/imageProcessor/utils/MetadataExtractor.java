@@ -3,12 +3,16 @@ package com.imageProcessor.utils;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.lang.Rational;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.drew.metadata.exif.ExifThumbnailDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.iptc.IptcDirectory;
+import com.drew.metadata.photoshop.PhotoshopDirectory;
 import com.imageProcessor.service.CargaImagenService;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +56,18 @@ public class MetadataExtractor {
             }
             
             // Metadatos IFD - No es necesaria
-//            ExifIFD0Directory directory3 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            ExifIFD0Directory directory3 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            if (directory3 != null) {
+            	byte[] rawBytes = directory3.getByteArray(ExifIFD0Directory.TAG_WIN_KEYWORDS);
+            	if (rawBytes != null) {
+            	    String keywordsString = new String(rawBytes, StandardCharsets.UTF_16LE); // Decodificar UTF-16LE
+            	    String[] keywords = keywordsString.split(";");
+            	    
+            	    for (int i = 0; i < keywords.length; i++) {
+            	        metadataMap.put("Etiqueta" + (i + 1), tratarCaracteres(keywords[i].trim()));
+            	    }
+            	}
+            }
             try {
 	            String coordenadas = getCoordenadas(metadata); 
 	            if (coordenadas != null && !coordenadas.equals("")) {
@@ -65,10 +80,10 @@ public class MetadataExtractor {
             }
 
             // Contiene datos sobre la miniatura de la imagen
-//            ExifThumbnailDirectory directory4 = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory.class);
+            ExifThumbnailDirectory directory4 = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory.class);
             
             // Metadatos específicos de Photoshop
-//            PhotoshopDirectory directory6 = metadata.getFirstDirectoryOfType(PhotoshopDirectory.class);
+            PhotoshopDirectory directory6 = metadata.getFirstDirectoryOfType(PhotoshopDirectory.class);
 
             
             

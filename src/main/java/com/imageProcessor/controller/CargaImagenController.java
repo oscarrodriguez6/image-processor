@@ -34,7 +34,7 @@ public class CargaImagenController {
     @Autowired
     private UsuarioService usuarioService;
     
-    @PostMapping("/carga-masiva1")
+    @PostMapping("/carga-masiva-postman")
     public ResponseEntity<CargaMasivaResponse> cargaMasiva1(@AuthenticationPrincipal UserDetails userDetails,
                                               @RequestParam(required = false) String carpeta,
                                               @RequestParam(defaultValue = "1") int opcionTratamiento) {
@@ -97,7 +97,7 @@ public class CargaImagenController {
         return ResponseEntity.ok(response);
     }
     	
-	@PostMapping("/carga-masiva")
+	@PostMapping("/carga-masiva-web")
     public ResponseEntity<CargaMasivaResponse> cargaMasiva(@AuthenticationPrincipal UserDetails userDetails,
    	                                           @RequestParam("files") MultipartFile[] files,
    	                                           @RequestParam(defaultValue = "1") int opcionTratamiento) {

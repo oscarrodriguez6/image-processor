@@ -113,29 +113,52 @@ public class ImageService {
         }
     }
 
-	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClaves(Long idUsuario, String query, Pageable pageable) {
+	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClaves(Long idUsuario, String query, String busquedaParcial, Pageable pageable) {
 		String[] listaQuery = query.split(";");
 		Page<Image> imagenes = null;
 		
-		switch (listaQuery.length) {
-			case 1:
-			    System.out.println("SELECT * FROM image WHERE usuario_id = " + idUsuario + " AND EXISTS (SELECT 1 FROM jsonb_each_text(metadata) WHERE AND value = " + listaQuery[0] + ") ORDER BY fecha DESC");
-				imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], pageable);
-				break;
-			case 2:
-				imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], pageable);		
-				break;
-			case 3:
-				imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
-				break;
-			case 4:
-				imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
-				break;
-			case 5:
-				imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
-				break;
-			default:
-				break;
+		if (busquedaParcial.equals("parcial")) {
+			switch (listaQuery.length) {
+				case 1:
+				    System.out.println("SELECT * FROM image WHERE usuario_id = " + idUsuario + " AND EXISTS (SELECT 1 FROM jsonb_each_text(metadata) WHERE AND value like % " + listaQuery[0] + "%) ORDER BY fecha DESC");
+					imagenes = imagenRepository.findByUsuarioIdClaveParcial(idUsuario, listaQuery[0], pageable);
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClaveParcial(idUsuario, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClaveParcial(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClaveParcial(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClaveParcial(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
+		} else {
+			switch (listaQuery.length) {
+				case 1:
+				    System.out.println("SELECT * FROM image WHERE usuario_id = " + idUsuario + " AND EXISTS (SELECT 1 FROM jsonb_each_text(metadata) WHERE AND value = " + listaQuery[0] + ") ORDER BY fecha DESC");
+					imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], pageable);
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
 		}
 		return formatearSalida(imagenes);
 	}
@@ -167,95 +190,162 @@ public class ImageService {
 		return formatearSalida(imagenes);
 	}
 
-	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClavesDesde(Long idUsuario, String query, LocalDateTime desde, Pageable pageable) {
+	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClavesDesde(Long idUsuario, String query, String busquedaParcial, LocalDateTime desde, Pageable pageable) {
 
 		if (desde == null) {
-			return obtenerMiniaturasPorUsuarioClaves(idUsuario, query, pageable);
+			return obtenerMiniaturasPorUsuarioClaves(idUsuario, query, busquedaParcial, pageable);
 		}
 
 		String[] listaQuery = query.split(";");
 		Page<Image> imagenes = null;
 		
-		switch (listaQuery.length) {
-			case 1:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], pageable);		
-				break;
-			case 2:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], pageable);		
-				break;
-			case 3:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
-				break;
-			case 4:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
-				break;
-			case 5:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
-				break;
-			default:
-				break;
+		if (busquedaParcial.equals("parcial")){
+			switch (listaQuery.length) {
+				case 1:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeParcial(idUsuario, desde, listaQuery[0], pageable);		
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeParcial(idUsuario, desde, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeParcial(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeParcial(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeParcial(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
+		} else {
+			switch (listaQuery.length) {
+				case 1:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], pageable);		
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesde(idUsuario, desde, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
 		}
 		return formatearSalida(imagenes);
 	}
 
-	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClavesHasta(Long idUsuario, String query, LocalDateTime hasta, Pageable pageable) {
+	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClavesHasta(Long idUsuario, String query, String busquedaParcial, LocalDateTime hasta, Pageable pageable) {
 
 		if (hasta == null) {
-			return obtenerMiniaturasPorUsuarioClaves(idUsuario, query, pageable);
+			return obtenerMiniaturasPorUsuarioClaves(idUsuario, query, busquedaParcial, pageable);
 		}
 
 		String[] listaQuery = query.split(";");
 		Page<Image> imagenes = null;
 		
-		switch (listaQuery.length) {
-			case 1:
-				imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], pageable);		
-				break;
-			case 2:
-				imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], pageable);		
-				break;
-			case 3:
-				imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
-				break;
-			case 4:
-				imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
-				break;
-			case 5:
-				imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
-				break;
-			default:
-				break;
+		if (busquedaParcial.equals("parcial")) {
+			switch (listaQuery.length) {
+				case 1:
+					imagenes = imagenRepository.findByUsuarioIdClaveHastaParcial(idUsuario, hasta, listaQuery[0], pageable);		
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClaveHastaParcial(idUsuario, hasta, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClaveHastaParcial(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClaveHastaParcial(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClaveHastaParcial(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
+		} else {
+			switch (listaQuery.length) {
+				case 1:
+					imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], pageable);		
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClaveHasta(idUsuario, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
 		}
+		
 		return formatearSalida(imagenes);
 	}
 
-	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClavesDesdeHasta(Long idUsuario, String query, LocalDateTime desde, LocalDateTime hasta, Pageable pageable) {
+	public Page<ImageDTO> obtenerMiniaturasPorUsuarioClavesDesdeHasta(Long idUsuario, String query, String busquedaParcial, LocalDateTime desde, LocalDateTime hasta, Pageable pageable) {
 
 		if (desde == null || hasta == null) {
-			return obtenerMiniaturasPorUsuarioClaves(idUsuario, query, pageable);
+			return obtenerMiniaturasPorUsuarioClaves(idUsuario, query, busquedaParcial, pageable);
 		}
 
 		String[] listaQuery = query.split(";");
 		Page<Image> imagenes = null;
 		
-		switch (listaQuery.length) {
-			case 1:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], pageable);		
-				break;
-			case 2:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], pageable);		
-				break;
-			case 3:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
-				break;
-			case 4:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
-				break;
-			case 5:
-				imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
-				break;
-			default:
-				break;
+		if (busquedaParcial.equals("parcial")) {
+			switch (listaQuery.length) {
+				case 1:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHastaParcial(idUsuario, desde, hasta, listaQuery[0], pageable);		
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHastaParcial(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHastaParcial(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHastaParcial(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHastaParcial(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
+		} else {
+			switch (listaQuery.length) {
+				case 1:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], pageable);		
+					break;
+				case 2:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], pageable);		
+					break;
+				case 3:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], pageable);		
+					break;
+				case 4:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], pageable);		
+					break;
+				case 5:
+					imagenes = imagenRepository.findByUsuarioIdClaveDesdeHasta(idUsuario, desde, hasta, listaQuery[0], listaQuery[1], listaQuery[2], listaQuery[3], listaQuery[4], pageable);		
+					break;
+				default:
+					break;
+			}
 		}
 		return formatearSalida(imagenes);
 	}

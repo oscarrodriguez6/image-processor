@@ -38,14 +38,6 @@ public class ImageController {
         this.imagenService = imagenService;
     }
 
-    @GetMapping("/miniatura/{id}")
-    public ResponseEntity<Resource> obtenerMiniatura(@PathVariable Long id) {
-        Resource miniatura = imagenService.obtenerMiniatura(id);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + miniatura.getFilename() + "\"")
-                .body(miniatura);
-    }
-
     @GetMapping("/original/{id}")
     public ResponseEntity<Resource> obtenerImagenOriginal(@PathVariable Long id) {
         Resource imagenOriginal = imagenService.obtenerImagenOriginal(id);
@@ -54,28 +46,6 @@ public class ImageController {
                 .body(imagenOriginal);
     }
     
-    @GetMapping("/miniaturas_ANT")
-    public ResponseEntity<Page<ImageDTO>> obtenerMiniaturas(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "25") int size,
-            @RequestParam(defaultValue = "none") String query) {
-
-    	System.out.println("Query: " + query);
-        Usuario usuario = usuarioService.validarUsuario(userDetails);
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<ImageDTO> miniaturas = null;
-        
-        if (query.equals("none")) {
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuario(usuario.getId(), pageable);
-        } else {
-        	query = MetadataExtractor.tratarCaracteres(query);
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClaves(usuario.getId(), query, pageable);
-        }
-        return ResponseEntity.ok(miniaturas);
-    }
-
     @GetMapping("/miniaturas")
     public ResponseEntity<Page<ImageDTO>> obtenerMiniaturasFechas(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -83,11 +53,13 @@ public class ImageController {
             @RequestParam(defaultValue = "25") int size,
             @RequestParam(defaultValue = "none") String query,
             @RequestParam(defaultValue = "none") String searchTermDesde,
-            @RequestParam(defaultValue = "none") String searchTermHasta) {
+            @RequestParam(defaultValue = "none") String searchTermHasta,
+            @RequestParam(defaultValue = "total") String busquedaParcial) {
 
     	System.out.println("Query: " + query);
     	System.out.println("searchTermDesde: " + searchTermDesde);
     	System.out.println("searchTermHasta: " + searchTermHasta);
+    	System.out.println("busquedaParcial: " + busquedaParcial);
         Usuario usuario = usuarioService.validarUsuario(userDetails);
         Pageable pageable = PageRequest.of(page, size);
 
@@ -97,7 +69,7 @@ public class ImageController {
         	miniaturas = imagenService.obtenerMiniaturasPorUsuario(usuario.getId(), pageable);
         } else if(!query.equals("none") && searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
         	query = MetadataExtractor.tratarCaracteres(query);
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClaves(usuario.getId(), query, pageable);
+        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClaves(usuario.getId(), query, busquedaParcial, pageable);
         } else if(query.equals("none") && !searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
         	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         	LocalDate fechaLocalDate = LocalDate.parse(searchTermDesde, formatter);
@@ -120,13 +92,13 @@ public class ImageController {
         	LocalDate fechaLocalDate = LocalDate.parse(searchTermDesde, formatter);
             LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
         	query = MetadataExtractor.tratarCaracteres(query);
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesde(usuario.getId(), query, fechaDesde, pageable);
+        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesde(usuario.getId(), query, busquedaParcial, fechaDesde, pageable);
         } else if(!query.equals("none") && searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
         	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
             LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
         	query = MetadataExtractor.tratarCaracteres(query);
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesHasta(usuario.getId(), query, fechaHasta, pageable);
+        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesHasta(usuario.getId(), query, busquedaParcial, fechaHasta, pageable);
 	    } else if(!query.equals("none") && !searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
 	    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	    	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
@@ -134,7 +106,7 @@ public class ImageController {
 	    	fechaLocalDate           = LocalDate.parse(searchTermDesde, formatter);
 	        LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
         	query = MetadataExtractor.tratarCaracteres(query);
-	    	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesdeHasta(usuario.getId(), query, fechaDesde, fechaHasta, pageable);
+	    	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesdeHasta(usuario.getId(), query, busquedaParcial, fechaDesde, fechaHasta, pageable);
 	    }
         return ResponseEntity.ok(miniaturas);
     }
