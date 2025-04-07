@@ -94,4 +94,9 @@ public class AuthController {
     public String homePage() {
         return "home";
     }
+
+    @GetMapping("/cargar")
+    public String redirectCargarImagenes() {
+        return "carga";
+    }
 }

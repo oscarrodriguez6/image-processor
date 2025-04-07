@@ -79,6 +79,11 @@
     position: sticky;
     top: 440px;
 }
+#mapaFormHome{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 125px;
+}
 
 /* Estilos para el overlay de carga */
 .loading-overlay {
@@ -99,3 +104,27 @@
     transform: translate(-50%, -50%);
 }
 
+#map {
+    width: 80vw;  /* 90% del ancho del viewport */
+    height: 80vh; /* 70% de la altura del viewport */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.map-popup img {
+    width: 150px;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    margin-bottom: 10px;
+}
+
+.map-container {
+    width: 80vw;  /* 90% del ancho del viewport */
+    height: 80vh; /* 70% de la altura del viewport */
+    margin: auto; /* Centra el mapa */
+}
+#dateIndex {
+    display: none;
+}

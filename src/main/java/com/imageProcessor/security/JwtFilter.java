@@ -63,8 +63,8 @@ public class JwtFilter extends OncePerRequestFilter {
     	if (path.equals("/home")) System.out.println("Intenta entrar en home. Después del filtro de login. Auth: " + authHeader);
     	
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+        	response.sendRedirect("/login"); // Redirigir explícitamente
+        	return;
         }
 
     	if (path.equals("/home")) System.out.println("Intenta entrar en home. Tiene Bearer");

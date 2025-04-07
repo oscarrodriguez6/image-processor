@@ -25,11 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener("scroll", detectarScroll);
 });
 
-document.getElementById("CargarForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    cargarArchivos();
-});
-
 function aplicarZoom() {
 	let fullImage = document.getElementById("fullImage");
 	let zoomed = false;
@@ -55,9 +50,10 @@ function cargarImagenes() {
     let searchTerm = document.getElementById("search") ? document.getElementById("search").value : " ";
     let searchTermDesde = document.getElementById("searchDateDesde") ? document.getElementById("searchDateDesde").value : " ";
     let searchTermHasta = document.getElementById("searchDateHasta") ? document.getElementById("searchDateHasta").value : " ";
+	let busquedaParcial = document.getElementById("busquedaParcial").checked ? "parcial" : "total";
     buscarDatos = " ";
-    if (searchTermDesde == "" && searchTermHasta == "") { buscarDatos = `/imagenes/miniaturas?page=${page}&size=25&query=${searchTerm}`;}
-    else {buscarDatos = `/imagenes/miniaturas?page=${page}&size=25&query=${searchTerm}&searchTermDesde=${searchTermDesde}&searchTermHasta=${searchTermHasta}`;}
+    if (searchTermDesde == "" && searchTermHasta == "") { buscarDatos = `/imagenes/miniaturas?page=${page}&size=25&query=${searchTerm}&busquedaParcial=${busquedaParcial}`;}
+    else {buscarDatos = `/imagenes/miniaturas?page=${page}&size=25&query=${searchTerm}&searchTermDesde=${searchTermDesde}&searchTermHasta=${searchTermHasta}$busquedaParcial=${busquedaParcial}`;}
     fetch(buscarDatos)
         .then(response => response.json())
         .then(data => {
@@ -87,7 +83,6 @@ function cargarImagenes() {
 			    // Determinar si la imagen es horizontal o vertical y aplicar la clase correspondiente
 			    let imgElement = document.createElement("img");
 			    imgElement.src = img.urlMiniatura;
-//			    imgElement.src = "/uploads/miniaturas/" + img.urlMiniatura + "?v=" + new Date().getTime();
 			    imgElement.classList.add("thumbnail", "img-fluid");
 			
 			    if (img.ancho > img.alto) { // Ajustar la lógica según las propiedades de tu objeto img
@@ -129,73 +124,15 @@ function abrirImagen(id) {
     new bootstrap.Modal(document.getElementById("imageModal")).show();
 }
 
-async function cargarArchivos() {
-    const formData = new FormData();
-    const carpetaFiles = document.getElementById("cargarCarpeta").files;
-    const individualFiles = document.getElementById("CargarImagenes").files;
+document.addEventListener("DOMContentLoaded", function () {
+    let cerrarModal = document.createElement("button");
+    cerrarModal.innerText = "X";
+    cerrarModal.classList.add("btn", "btn-danger", "cerrar-modal");
+    cerrarModal.onclick = function () {
+        let modal = bootstrap.Modal.getInstance(document.getElementById("imageModal"));
+        modal.hide();
+    };
 
-    // Filtrar solo imágenes
-    const imagenes = [];
-
-    for (let i = 0; i < carpetaFiles.length; i++) {
-        const file = carpetaFiles[i];
-        if (file.type.startsWith("image/")) {
-            imagenes.push(file);
-        }
-    }
-
-    for (let i = 0; i < individualFiles.length; i++) {
-        const file = individualFiles[i];
-        if (file.type.startsWith("image/")) {
-            imagenes.push(file);
-        }
-    }
-
-    // Añadir imágenes a formData
-    imagenes.forEach(img => formData.append("files", img, img.webkitRelativePath || img.name));
-
-    mostrarLoadingOverlay();
-
-    fetch('/imagenes/carga-masiva', { 
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(error => { throw new Error(error.error); });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data);
-        ocultarLoadingOverlay();
-        mostrarMensajeExito("Archivos cargados con éxito.");
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        ocultarLoadingOverlay();
-        mostrarMensajeError(error.message);
-    });
-}
-
-function mostrarLoadingOverlay() {
-    document.getElementById("loading-overlay").style.display = "block";
-									
-}
-
-function ocultarLoadingOverlay() {
-    document.getElementById("loading-overlay").style.display = "none";
-								   
-}
-
-function mostrarMensajeError(mensaje) {
-    const errorDiv = document.getElementById("error-message");
-    errorDiv.textContent = mensaje;
-    errorDiv.style.display = "block";
-}
-
-function mostrarMensajeExito(mensaje) {
-    const successDiv = document.getElementById("success-message");
-    successDiv.textContent = mensaje;
-    successDiv.style.display = "block";
-}
+    let modalBody = document.querySelector("#imageModal .modal-body");
+    modalBody.appendChild(cerrarModal);
+});
