@@ -135,7 +135,7 @@ public class CargaImagenService {
             	log.info("Imagen a cargar: " + file.getName());
             	
             	String relativePath = file.getOriginalFilename();
-                File imagen = new File("E:/AplicacionFotos/" + usuario.getUsername() + "/" + relativePath);
+                File imagen = new File(carpetaImagenes + usuario.getUsername() + "/" + relativePath);
                 
                 // Crea las carpetas si no existen
                 if (!imagen.getParentFile().exists()) {
