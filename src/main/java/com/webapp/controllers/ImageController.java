@@ -3,6 +3,9 @@ package com.webapp.controllers;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -117,5 +122,21 @@ public class ImageController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
     }
+
+    @PostMapping("/borrarImagenes")
+    public ResponseEntity<?> borrarImagenes(@RequestBody Map<String, List<Long>> imagenes) {
+        List<Long> ids = imagenes.get("ids");
+        log.info("Solicitud para borrar {} imágenes", ids.size());
+
+        try {
+            imagenService.borrarImagenes(ids);
+            return ResponseEntity.ok("Imágenes borradas correctamente");
+        } catch (Exception e) {
+            log.error("Error en el borrado de imágenes: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Error al borrar imágenes");
+        }
+    }
+
+    
 
 }

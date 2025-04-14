@@ -2,6 +2,8 @@ package com.imageProcessor.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -11,12 +13,15 @@ import com.imageProcessor.dto.ClusterDTO;
 import com.imageProcessor.dto.ImageDTO;
 import com.imageProcessor.model.Image;
 import com.imageProcessor.repository.ImageRepository;
+import com.webapp.controllers.ImageController;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.metamodel.EntityType;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -33,6 +38,8 @@ public class ImageService {
 
     @Autowired
     private ImageRepository imagenRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
     public List<File> obtenerNuevasImagenes(String rutaCarpeta, int opcionTratamiento) {
         File carpeta = new File(rutaCarpeta);
@@ -385,6 +392,33 @@ public class ImageService {
 
      public int contarImagenes (Long idUsuario, double minLat, double maxLat, double minLon, double maxLon) {
     	 return imagenRepository.contarImagenesEnArea(idUsuario, minLat, maxLat, minLon, maxLon);
+     }
+
+     public void borrarImagenes(List<Long> ids) {
+         for (Long id : ids) {
+             Optional<Image> imagenOpt = imagenRepository.findById(id);
+             if (imagenOpt.isPresent()) {
+                 Image imagen = imagenOpt.get();
+
+                 Path rutaOriginal = Paths.get(imagen.getRuta());
+                 Path rutaMiniatura = Paths.get(imagen.getThumbnailUrl());
+
+                 try {
+                     Files.deleteIfExists(rutaOriginal);
+                     Files.deleteIfExists(rutaMiniatura);
+                     log.info("Archivos borrados: {} y {}", rutaOriginal, rutaMiniatura);
+                 } catch (IOException e) {
+                     log.error("Error al borrar archivos de la imagen ID {}: {}", id, e.getMessage());
+                     throw new RuntimeException("Error al borrar archivos de imagen con ID: " + id);
+                 }
+
+                 imagenRepository.deleteById(id);
+                 log.info("Imagen con ID {} eliminada de la base de datos", id);
+             } else {
+                 log.error("No se encontró imagen con ID {}", id);
+                 throw new RuntimeException("Error al borrar archivos de imagen con ID: " + id);
+             }
+         }
      }
 
 }

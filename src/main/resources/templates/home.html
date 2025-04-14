@@ -5,105 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galería de Imágenes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 	<div class="container-fluid mt-4" style="width: 90%">
-		<div class="row mb-3">
-	        <a href="/home"> <img src="/images/MisFotos.jpg" class="img-fluid" alt="Mis Fotos"></a>
-		</div>
-		<div class="row">
-			<a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">Opciones</a>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="row image-container mt-3" id="gallery"></div>
-            </div>
-        </div>
-	</div>
-	<div class="offcanvas offcanvas-start hide" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style="width: 80%" aria-modal="true" role="dialog">
-		<!-- Búsqueda por metadatos y mapa -->
-		<br>
-		<div class="row">
-		    <form id="searchForm">
-				<div class="row">
-			        <div class="mb-12">
-			            <input type="text" id="search" class="form-control form-control-lg" placeholder="Buscar por metadatos...">
-						<div class="form-check">
-						  <input class="form-check-input" type="checkbox" value="parcial" id="busquedaParcial">
-						  <label class="form-check-label" for="flexCheckDefault">Busqueda parcial</label>
-						</div>
-			        </div>
-				</div>
-				<div class="row">
-				<div class="col">
-					<div class="form-floating">
-						<input type="date" id="searchDateDesde" placeholder="Fecha desde" class="form-control form-control-lg">
-						<label for="floatingInputGrid">Fecha desde</label>
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-floating form-floating-input-padding-t">
-						<input type="date" id="searchDateHasta" placeholder="Fecha hasta" class="form-control form-control-lg">
-						<label for="floatingInputGrid">Fecha hasta</label>
-					</div>
-				</div>
-				</div>
-		        <button type="submit" class="btn btn-primary w-100">Buscar</button>
-		    </form>
+	    <!-- Encabezado -->
+	    <div class="row mb-3">
+	        <a href="/home">
+	            <img src="/images/MisFotos.jpg" class="img-fluid" alt="Mis Fotos">
+	        </a>
+	    </div>
+	
+		<!-- Modal -->
+		<div class="modal fade" id="alerta" tabindex="-1" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h1 class="modal-title fs-5" id="exampleModalLabel">Imagenes borradas</h1>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div class="modal-body">
+		        Imágenes borradas con éxito
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		  </div>
 		</div>
 		
-		<!-- Búsqueda por fechas -->
-		<br>
-		<form id="searchForm" class="row g-3">
-			<div class="col">
-				<div class="form-floating">
-					<input type="date" id="searchDateDesde" placeholder="Fecha desde" class="form-control form-control-lg">
-					<label for="floatingInputGrid">Fecha desde</label>
-				</div>
-			</div>
-			<div class="col">
-				<div class="form-floating form-floating-input-padding-t">
-					<input type="date" id="searchDateHasta" placeholder="Fecha hasta" class="form-control form-control-lg">
-					<label for="floatingInputGrid">Fecha hasta</label>
-				</div>
-			</div>
-			<div class="col-auto">
-				<button type="submit" class="btn btn-primary w-100">Buscar</button>
-			</div>
-		</form>		
-		
-		<!-- Mapa -->
-		<br>
-		<div class="row">
-			<div id="mapaFormHome" class="mb-12">
-			    <a href="/verMapa" class="btn btn-secondary w-100">Ver Mapa</a>
-			</div>
-		</div>
+		<!-- Botón de menú lateral -->
+	    <div class="row mb-3">
+	        <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
+	           aria-controls="offcanvasExample">Opciones</a>
+	    </div>
+	
+	    <!-- Galería de imágenes -->
+	    <div class="row">
+	        <div class="col-md-12">
+	            <div class="row image-container mt-3" id="gallery"></div>
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- Menú lateral -->
+	<div class="offcanvas offcanvas-start hide" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel"
+	     style="width: 80%" aria-modal="true" role="dialog">
+	    <div class="offcanvas-header">
+	        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Opciones</h5>
+	        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+	    </div>
+	
+	    <div class="offcanvas-body">
+	        <!-- Búsqueda -->
+	        <form id="searchForm">
+	            <div class="mb-3">
+	                <input type="text" id="search" class="form-control form-control-lg" placeholder="Buscar por metadatos...">
+	                <div class="form-check mt-2">
+	                    <input class="form-check-input" type="checkbox" value="parcial" id="busquedaParcial">
+	                    <label class="form-check-label" for="busquedaParcial">Búsqueda parcial</label>
+	                </div>
+	            </div>
+	
+	            <div class="row mb-3">
+	                <div class="col">
+	                    <div class="form-floating">
+	                        <input type="date" id="searchDateDesde" class="form-control" placeholder="Fecha desde">
+	                        <label for="searchDateDesde">Fecha desde</label>
+	                    </div>
+	                </div>
+	                <div class="col">
+	                    <div class="form-floating">
+	                        <input type="date" id="searchDateHasta" class="form-control" placeholder="Fecha hasta">
+	                        <label for="searchDateHasta">Fecha hasta</label>
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <button type="submit" class="btn btn-primary w-100 mb-4">Buscar</button>
+	        </form>
+	
+	        <!-- Botón para ver el mapa -->
+	        <div id="mapaFormHome" class="mb-3">
+	            <a href="/verMapa" class="btn btn-secondary w-100">Ver Mapa</a>
+	        </div>
+	
+	        <!-- Botón para cargar imágenes -->
+	        <div id="CargarForm" class="mb-3">
+	            <a href="/cargar" class="btn btn-secondary w-100">Cargar imágenes</a>
+	        </div>
 
-		<br>
-		<div class="row">
-			<div class="mb-12">
-				<a href="/cargar" class="btn btn-secondary w-100">Cargar imágenes</a>
-			</div>
+			<!-- Botón para borrar imágenes -->
+			<form id="borrarForm">
+				<button type="submit" class="btn btn-danger w-100 mb-4">Borrar seleccionadas</button>
+			</form>
+
+			<!-- Botón para seleccionar todas las imágenes -->
+			<form id="seleccionarForm">
+				<button type="submit" class="btn btn-warning w-100 mb-4">Seleccionar todas las imagenes mostradas</button>
+			</form>
 		</div>
 	</div>
-
-    <!-- Modal para mostrar la imagen original -->
-    <div class="modal fade" id="imageModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-fullscreen">
-            <div class="modal-content modal-content-fullscreen">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body modal-body-fullscreen text-center">
-                    <img id="fullImage" class="img-fluid img-fullscreen zoomable" src="" alt="Imagen Original">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/scripts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	
+	<!-- Modal de imagen ampliada -->
+	<div class="modal fade" id="imageModal" tabindex="-1">
+	    <div class="modal-dialog modal-dialog-fullscreen">
+	        <div class="modal-content modal-content-fullscreen">
+	            <div class="modal-header">
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+	            </div>
+	            <div class="modal-body modal-body-fullscreen text-center">
+	                <img id="fullImage" class="img-fluid img-fullscreen zoomable" src="" alt="Imagen Original">
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- Scripts -->
+	<script src="/js/scripts.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
