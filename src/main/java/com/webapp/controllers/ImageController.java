@@ -4,12 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +36,7 @@ public class ImageController {
     private UsuarioService usuarioService;
 
     private final ImageService imagenService;
+	private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
     public ImageController(ImageService imagenService) {
         this.imagenService = imagenService;
@@ -56,59 +60,62 @@ public class ImageController {
             @RequestParam(defaultValue = "none") String searchTermHasta,
             @RequestParam(defaultValue = "total") String busquedaParcial) {
 
-    	System.out.println("Query: " + query);
-    	System.out.println("searchTermDesde: " + searchTermDesde);
-    	System.out.println("searchTermHasta: " + searchTermHasta);
-    	System.out.println("busquedaParcial: " + busquedaParcial);
         Usuario usuario = usuarioService.validarUsuario(userDetails);
         Pageable pageable = PageRequest.of(page, size);
 
+        log.info("obtenerMiniaturasFechas para el usuario: " + usuario.getNombre() + " con filtros: " + query + ",  búsqueda parcial: " + busquedaParcial + " desde " + searchTermDesde + " hasta " + searchTermHasta);
         Page<ImageDTO> miniaturas = null;
         
-        if (query.equals("none") && searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuario(usuario.getId(), pageable);
-        } else if(!query.equals("none") && searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
-        	query = MetadataExtractor.tratarCaracteres(query);
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClaves(usuario.getId(), query, busquedaParcial, pageable);
-        } else if(query.equals("none") && !searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
-        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        	LocalDate fechaLocalDate = LocalDate.parse(searchTermDesde, formatter);
-            LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioDesde(usuario.getId(), fechaDesde, pageable);
-        } else if(query.equals("none") && searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
-        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
-            LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioHasta(usuario.getId(), fechaHasta, pageable);
-	    } else if(query.equals("none") && !searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
-	    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	    	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
-	        LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
-	    	fechaLocalDate           = LocalDate.parse(searchTermDesde, formatter);
-	        LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
-	    	miniaturas = imagenService.obtenerMiniaturasPorUsuarioDesdeHasta(usuario.getId(), fechaDesde, fechaHasta, pageable);
-        } else if(!query.equals("none") && !searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
-        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        	LocalDate fechaLocalDate = LocalDate.parse(searchTermDesde, formatter);
-            LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
-        	query = MetadataExtractor.tratarCaracteres(query);
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesde(usuario.getId(), query, busquedaParcial, fechaDesde, pageable);
-        } else if(!query.equals("none") && searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
-        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
-            LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
-        	query = MetadataExtractor.tratarCaracteres(query);
-        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesHasta(usuario.getId(), query, busquedaParcial, fechaHasta, pageable);
-	    } else if(!query.equals("none") && !searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
-	    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	    	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
-	        LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
-	    	fechaLocalDate           = LocalDate.parse(searchTermDesde, formatter);
-	        LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
-        	query = MetadataExtractor.tratarCaracteres(query);
-	    	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesdeHasta(usuario.getId(), query, busquedaParcial, fechaDesde, fechaHasta, pageable);
-	    }
-        return ResponseEntity.ok(miniaturas);
+        try {
+	        if (query.equals("none") && searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
+	        	miniaturas = imagenService.obtenerMiniaturasPorUsuario(usuario.getId(), pageable);
+	        } else if(!query.equals("none") && searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
+	        	query = MetadataExtractor.tratarCaracteres(query);
+	        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClaves(usuario.getId(), query, busquedaParcial, pageable);
+	        } else if(query.equals("none") && !searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        	LocalDate fechaLocalDate = LocalDate.parse(searchTermDesde, formatter);
+	            LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
+	        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioDesde(usuario.getId(), fechaDesde, pageable);
+	        } else if(query.equals("none") && searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
+	            LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
+	        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioHasta(usuario.getId(), fechaHasta, pageable);
+		    } else if(query.equals("none") && !searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
+		    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		    	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
+		        LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
+		    	fechaLocalDate           = LocalDate.parse(searchTermDesde, formatter);
+		        LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
+		    	miniaturas = imagenService.obtenerMiniaturasPorUsuarioDesdeHasta(usuario.getId(), fechaDesde, fechaHasta, pageable);
+	        } else if(!query.equals("none") && !searchTermDesde.equals("none") && searchTermHasta.equals("none")) {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        	LocalDate fechaLocalDate = LocalDate.parse(searchTermDesde, formatter);
+	            LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
+	        	query = MetadataExtractor.tratarCaracteres(query);
+	        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesde(usuario.getId(), query, busquedaParcial, fechaDesde, pageable);
+	        } else if(!query.equals("none") && searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
+	        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
+	            LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
+	        	query = MetadataExtractor.tratarCaracteres(query);
+	        	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesHasta(usuario.getId(), query, busquedaParcial, fechaHasta, pageable);
+		    } else if(!query.equals("none") && !searchTermDesde.equals("none") && !searchTermHasta.equals("none")) {
+		    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		    	LocalDate fechaLocalDate = LocalDate.parse(searchTermHasta, formatter);
+		        LocalDateTime fechaHasta = fechaLocalDate.atStartOfDay();
+		    	fechaLocalDate           = LocalDate.parse(searchTermDesde, formatter);
+		        LocalDateTime fechaDesde = fechaLocalDate.atStartOfDay();
+	        	query = MetadataExtractor.tratarCaracteres(query);
+		    	miniaturas = imagenService.obtenerMiniaturasPorUsuarioClavesDesdeHasta(usuario.getId(), query, busquedaParcial, fechaDesde, fechaHasta, pageable);
+		    }
+	        log.info("Imágenes devueltas: " + miniaturas.getSize());
+	        return ResponseEntity.ok(miniaturas);
+        } catch (Exception e) {
+			log.error("Error al buscar las imágenes: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
 }

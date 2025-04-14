@@ -10,7 +10,7 @@
     <div class="container d-flex justify-content-center align-items-center vh-100">
         <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
             <h3 class="text-center mb-3">Registro</h3>
-            <form action="/register" method="POST">
+            <form id="registroForm">
                 <div class="mb-3">
                     <label for="name" class="form-label">Nombre</label>
                     <input type="text" class="form-control" id="name" name="name" required>
@@ -23,6 +23,7 @@
                     <label for="password" class="form-label">Contraseña</label>
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
+                <div id="errorMensaje" class="text-danger text-center mb-2"></div>
                 <button type="submit" class="btn btn-success w-100">Registrarse</button>
                 <p class="text-center mt-3">
                     ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
@@ -30,6 +31,44 @@
             </form>
         </div>
     </div>
+
+    <script>
+		document.getElementById("registroForm").addEventListener("submit", async function(e) {
+		    e.preventDefault();
+
+		    const nombre = document.getElementById("name").value;
+		    const email = document.getElementById("email").value;
+		    const password = document.getElementById("password").value;
+
+		    const errorDiv = document.getElementById("errorMensaje");
+		    errorDiv.textContent = ""; // limpia errores anteriores
+
+		    try {
+		        const response = await fetch("/usuarios/registro", {
+		            method: "POST",
+		            headers: {
+		                "Content-Type": "application/x-www-form-urlencoded"
+		            },
+		            body: new URLSearchParams({ nombre, email, password })
+		        });
+
+		        if (response.ok) {
+		            window.location.href = "/login";
+		        } else {
+		            const contentType = response.headers.get("content-type");
+		            if (contentType && contentType.includes("application/json")) {
+		                const data = await response.json();
+		                errorDiv.textContent = data.message || "Error inesperado.";
+		            } else {
+		                const text = await response.text();
+		                errorDiv.textContent = text || `Error ${response.status}`;
+		            }
+		        }
+		    } catch (error) {
+		        errorDiv.textContent = "No se pudo conectar con el servidor.";
+		    }
+		});
+
+    </script>
 </body>
 </html>
-

@@ -55,8 +55,7 @@ public class CargaImagenController {
             log.info("Usuario no autenticado");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     	}
-        log.info("Usuario autenticado: ", usuario.getUsername());
-
+        log.info("Carga masiva iniciada desde Postman para el usuario con usuario: ", usuario.getUsername());
 
         long inicio = System.nanoTime(); // También puedes usar System.currentTimeMillis();
         LocalDateTime horaIni = LocalDateTime.now();
@@ -118,7 +117,7 @@ public class CargaImagenController {
             log.info("Usuario no autenticado");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     	}
-        log.info("Usuario autenticado: ", usuario.getUsername());
+        log.info("Carga masiva iniciada desde la web para el usuario con usuario: ", usuario.getUsername());
 
 
         long inicio = System.nanoTime(); // También puedes usar System.currentTimeMillis();

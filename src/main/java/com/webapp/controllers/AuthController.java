@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import com.imageProcessor.controller.UsuarioController;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +24,7 @@ import java.util.Map;
 public class AuthController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String API_URL = "http://localhost:8080/usuarios";
+	private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     @GetMapping("/login")
     public String loginPage() {
@@ -29,31 +34,23 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password, Model model, HttpServletResponse response) {
         try {
-            System.out.println("Traza Oscar antes de llamada");
-
+        	log.info("Entra en login con usuario: email: " + email);
             ResponseEntity<Map> responseAuth = restTemplate.postForEntity(
                     API_URL + "/login?email=" + email + "&password=" + password, null, Map.class);
-            System.out.println("Traza Oscar: " + responseAuth.getStatusCode());
-            System.out.println("Traza Oscar: " + responseAuth.getStatusCode().is2xxSuccessful());
-            System.out.println("Traza Oscar: " + responseAuth.getBody().get("token"));
             if (responseAuth.getStatusCode().is2xxSuccessful()) {
-            	System.out.println("Entra en el if");
                 model.addAttribute("token", responseAuth.getBody().get("token"));
-                System.out.println("despues del model");
                 String token = responseAuth.getBody().get("token").toString();
-                System.out.println("Token para la cookie: " + token);
                 Cookie cookie = new Cookie("token", token);
                 cookie.setHttpOnly(true);
                 cookie.setSecure(false);
                 cookie.setAttribute("SameSite", "Lax");
                 cookie.setPath("/");
                 cookie.setMaxAge(3600);
-                System.out.println("Antes del response: " + cookie.toString());
                 try {
                 	response.addCookie(cookie);
-                	System.out.println("Redirect home");
+                	log.info("Redirect home");
                 } catch (Exception e) {
-                	System.out.println("Error al agregar la cookie: " + e.getMessage());
+                	log.error("Error al agregar la cookie: " + e.getMessage());
                     e.printStackTrace();
 				}
                 return "redirect:/home";
