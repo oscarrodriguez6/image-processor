@@ -37,15 +37,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     	String path = request.getServletPath();
 
-    	if (path.equals("/home")) System.out.println("Intenta entrar en home");
-
     	// Excluir el login del filtro
-    	if (path.equals("/usuarios/login") || path.equals("/login") || path.equals("/register")) {
+    	if (path.equals("/usuarios/login") || path.equals("/usuarios/registro") || path.equals("/login") || path.equals("/register")) {
     		filterChain.doFilter(request, response);
     	    return;
     	}
-
-    	if (path.equals("/home")) System.out.println("Intenta entrar en home. Después del filtro de login");
     	
     	String authHeader = ""; 
     	authHeader= request.getHeader("Authorization");
@@ -59,15 +55,11 @@ public class JwtFilter extends OncePerRequestFilter {
     			}
     		}
     	}
-
-    	if (path.equals("/home")) System.out.println("Intenta entrar en home. Después del filtro de login. Auth: " + authHeader);
     	
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
         	response.sendRedirect("/login"); // Redirigir explícitamente
         	return;
         }
-
-    	if (path.equals("/home")) System.out.println("Intenta entrar en home. Tiene Bearer");
 
         String token = authHeader.substring(7); // Quita "Bearer "
         try {
@@ -78,7 +70,6 @@ public class JwtFilter extends OncePerRequestFilter {
             	UserDetails userDetails = usuarioService.loadUserByUsername(email);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());   // con roles
-//                		userDetails, null, null);                             // sin roles 
                 log.info("Autenticando usuario con email: {}", email);
                 log.info("Authorities: {}", userDetails.getAuthorities());
 
@@ -87,11 +78,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(null); // No autenticamos con Spring Security aún
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("No se puede obtener el JWT Token");
+            log.error("No se puede obtener el JWT Token" + e.getMessage());
             return;
         } catch (JwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token inválido");
+            log.error("Token invalido: " + e.getMessage());
             return;
         }
 
