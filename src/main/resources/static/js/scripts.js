@@ -6,7 +6,6 @@ let lastMonth = "";
 const dateIndex = document.createElement("div");
 dateIndex.id = "dateIndex";
 document.body.appendChild(dateIndex);
-document.addEventListener('DOMContentLoaded', aplicarMovimientoImagen);
 
 // Para guardar referencias a los grupos mensuales y su selección
 const monthGroups = {};
