@@ -74,8 +74,7 @@ public class MetadataExtractor {
 	            	metadataMap.put("Coordenadas", coordenadas);
 	            }
             } catch (Exception e) {
-				log.error("Error al obtener las coordenadas");
-				System.err.println("Error al obtener las coordenadas");
+				log.error("Error al obtener las coordenadas: " + e.getMessage());
 				e.getMessage();
             }
 
@@ -88,8 +87,7 @@ public class MetadataExtractor {
             
             
         } catch (Exception e) {
-            System.err.println("Error al leer metadatos de " + imagen.getName());
-            System.err.println(e.getMessage());
+            log.error("Error al leer metadatos de " + imagen.getName() + ". Error: " + e.getMessage());
         }
 
         return metadataMap;
@@ -109,16 +107,12 @@ public class MetadataExtractor {
 	
 	            double decimalLatitude = convertToDecimal(latitude, latitudeRef);
 	            double decimalLongitude = convertToDecimal(longitude, longitudeRef);
-	
-	            System.out.println("Latitude: " + decimalLatitude);
-	            System.out.println("Longitude: " + decimalLongitude);
+
 	            coordenadas = decimalLatitude + " " + decimalLongitude;
 	            
-	        } else {
-	            System.out.println("No se encontraron datos GPS en la imagen.");
 	        }
     	} catch (Exception e) {
-			System.out.println("Error: " + e.getMessage());
+			log.error("Error: " + e.getMessage());
 		}
         return  coordenadas;
     }

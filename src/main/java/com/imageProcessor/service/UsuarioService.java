@@ -70,17 +70,21 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public Usuario validarUsuario(UserDetails userDetails) {
+		log.info("Entramos a validarUsuario");
         if (userDetails == null) {
+        	log.error("Sin parametros");
             return null;
         }
         
         String emailUsuario = userDetails.getUsername();  // Obtener email del usuario autenticado
+        log.info("Email: " + emailUsuario);
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(emailUsuario);
         
         if (usuarioOptional.isEmpty()) {
+        	log.error("Usuario no encontrado" + emailUsuario);
             return null;
         }
-        
+        log.info("Usuario encontrado: " + emailUsuario);
         return usuarioOptional.get();
    	
     }

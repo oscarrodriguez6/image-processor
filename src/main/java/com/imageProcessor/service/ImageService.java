@@ -75,14 +75,8 @@ public class ImageService {
     }
     
     public Page<ImageDTO> obtenerMiniaturasPorUsuario(Long idUsuario, Pageable pageable) {
-    	System.out.println(entityManager.getMetamodel().entity(Image.class));
     	
-    	System.out.println("-----------------------------");
     	EntityType<?> imageEntity = entityManager.getMetamodel().entity(Image.class);
-        System.out.println("Nombre de la tabla: " + imageEntity.getName());
-        imageEntity.getAttributes().forEach(attr -> 
-            System.out.println("Campo: " + attr.getName() + " - Tipo: " + attr.getJavaType())
-        );
 
         Page<Image> imagenes = imagenRepository.findByUsuarioId(idUsuario, pageable);
 		return formatearSalida(imagenes);
@@ -127,7 +121,7 @@ public class ImageService {
 		if (busquedaParcial.equals("parcial")) {
 			switch (listaQuery.length) {
 				case 1:
-				    System.out.println("SELECT * FROM image WHERE usuario_id = " + idUsuario + " AND EXISTS (SELECT 1 FROM jsonb_each_text(metadata) WHERE AND value like % " + listaQuery[0] + "%) ORDER BY fecha DESC");
+				    log.info("SELECT * FROM image WHERE usuario_id = " + idUsuario + " AND EXISTS (SELECT 1 FROM jsonb_each_text(metadata) WHERE AND value like % " + listaQuery[0] + "%) ORDER BY fecha DESC");
 					imagenes = imagenRepository.findByUsuarioIdClaveParcial(idUsuario, listaQuery[0], pageable);
 					break;
 				case 2:
@@ -148,7 +142,7 @@ public class ImageService {
 		} else {
 			switch (listaQuery.length) {
 				case 1:
-				    System.out.println("SELECT * FROM image WHERE usuario_id = " + idUsuario + " AND EXISTS (SELECT 1 FROM jsonb_each_text(metadata) WHERE AND value = " + listaQuery[0] + ") ORDER BY fecha DESC");
+				    log.info("SELECT * FROM image WHERE usuario_id = " + idUsuario + " AND EXISTS (SELECT 1 FROM jsonb_each_text(metadata) WHERE AND value = " + listaQuery[0] + ") ORDER BY fecha DESC");
 					imagenes = imagenRepository.findByUsuarioIdClave(idUsuario, listaQuery[0], pageable);
 					break;
 				case 2:

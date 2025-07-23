@@ -1,6 +1,7 @@
 <configuration>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+		<file>/AplicacionFotos/logs/catalina.out</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -8,7 +9,7 @@
 
     <!-- Definición de diferentes appenders para diferentes clases -->
     <appender name="CargaImagenController" class="ch.qos.logback.core.FileAppender">
-        <file>logs/CargaImagenController.log</file>
+        <file>/AplicacionFotos/logs/CargaImagenController.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -18,7 +19,7 @@
     </logger>
 
     <appender name="security" class="ch.qos.logback.core.FileAppender">
-        <file>logs/security.log</file>
+        <file>/AplicacionFotos/logs/security.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -28,7 +29,7 @@
     </logger>
 
     <appender name="AI" class="ch.qos.logback.core.FileAppender">
-        <file>logs/AI.log</file>
+        <file>/AplicacionFotos/logs/AI.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -38,7 +39,7 @@
     </logger>
 
     <appender name="CargaImagenes" class="ch.qos.logback.core.FileAppender">
-        <file>logs/CargaImagenes.log</file>
+        <file>/AplicacionFotos/logs/CargaImagenes.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -48,7 +49,7 @@
     </logger>
 
     <appender name="UsuarioController" class="ch.qos.logback.core.FileAppender">
-        <file>logs/UsuarioController.log</file>
+        <file>/AplicacionFotos/logs/UsuarioController.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -58,7 +59,7 @@
     </logger>
 
     <appender name="AuthController" class="ch.qos.logback.core.FileAppender">
-        <file>logs/AuthController.log</file>
+        <file>/AplicacionFotos/logs/AuthController.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -68,7 +69,7 @@
     </logger>
 
     <appender name="ImageController" class="ch.qos.logback.core.FileAppender">
-        <file>logs/ImageController.log</file>
+        <file>/AplicacionFotos/logs/ImageController.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -78,13 +79,43 @@
     </logger>
 
     <appender name="MapaController" class="ch.qos.logback.core.FileAppender">
-        <file>logs/MapaController.log</file>
+        <file>/AplicacionFotos/logs/MapaController.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.webapp.controllers.MapaController" level="DEBUG" additivity="false">
         <appender-ref ref="MapaController" />
+    </logger>
+
+    <appender name="ViajeController" class="ch.qos.logback.core.FileAppender">
+        <file>/AplicacionFotos/logs/ViajeController.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.webapp.controllers.ViajeController" level="DEBUG" additivity="false">
+        <appender-ref ref="ViajeController" />
+    </logger>
+
+    <appender name="PasoController" class="ch.qos.logback.core.FileAppender">
+        <file>/AplicacionFotos/logs/PasoController.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.webapp.controllers.PasoController" level="DEBUG" additivity="false">
+        <appender-ref ref="PasoController" />
+    </logger>
+
+    <appender name="EstadisticasController" class="ch.qos.logback.core.FileAppender">
+        <file>/AplicacionFotos/logs/EstadisticasController.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.webapp.controllers.PasoController" level="DEBUG" additivity="false">
+        <appender-ref ref="EstadisticasController" />
     </logger>
 
     <root level="INFO">

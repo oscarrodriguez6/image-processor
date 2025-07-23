@@ -19,10 +19,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 	List<Image> findByUsuarioId(Long usuarioId);
 
 	// Por usuario
-//    @Query("SELECT i FROM Image i WHERE i.usuarioId = :idUsuario ORDER BY i.fecha DESC")
-//    Page<Image> findByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable pageable);
-    
-	// Por usuario
 	@Query("SELECT i FROM Image i WHERE i.usuario.id = :idUsuario ORDER BY i.fecha DESC")
 	Page<Image> findByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable pageable);
     
@@ -173,10 +169,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
                                                       @Param("lonMin") Double lonMin,
                                                       @Param("lonMax") Double lonMax);
 
-/*    @Query("SELECT COUNT(i) FROM Image i WHERE i.usuario.id = :idUsuario AND i.ST_X(coordenadas) BETWEEN :minLon AND :maxLon AND i.ST_Y(coordenadas) BETWEEN :minLat AND :maxLat")
-    int contarImagenesEnArea(@Param("idUsuario") Long idUsuario, @Param("minLat") double minLat, @Param("maxLat") double maxLat,
-                              @Param("minLon") double minLon, @Param("maxLon") double maxLon);
-*/
     @Query(value = "SELECT COUNT(*) FROM image WHERE usuario_id = :idUsuario AND ST_X(coordenadas) BETWEEN :minLon AND :maxLon AND ST_Y(coordenadas) BETWEEN :minLat AND :maxLat", nativeQuery = true)
     int contarImagenesEnArea(@Param("idUsuario") Long idUsuario, @Param("minLat") double minLat, @Param("maxLat") double maxLat,
                               @Param("minLon") double minLon, @Param("maxLon") double maxLon);

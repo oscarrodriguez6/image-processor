@@ -135,7 +135,7 @@ public class CargaImagenService {
             	log.info("Imagen a cargar: " + file.getName());
             	
             	String relativePath = file.getOriginalFilename();
-                File imagen = new File("E:/AplicacionFotos/" + usuario.getUsername() + "/" + relativePath);
+                File imagen = new File(carpetaImagenes + "/" + usuario.getUsername() + "/" + relativePath);
                 
                 // Crea las carpetas si no existen
                 if (!imagen.getParentFile().exists()) {
@@ -304,45 +304,6 @@ public class CargaImagenService {
 		}
     	
     }
-    private boolean actualizarImagen_ant(File imagen, Image imagenExistente, Usuario usuario){
-    	
-    	try {
-	    	// Obtener metadatos
-	    	Map<String, Object> metadata = procesarMetadatos(imagen);
-	             
-	    	// Obtener descripción IA
-	/*    	Map<String, Object> metadataIA = null; 
-	    	metadataIA = procesarMetadatosIA(imagen);
-	    	imagenExistente.setEtiquetas(metadataIA);
-	        imagenExistente.setProcesada(true);             // Aún no ha pasado por la IA
-	*/
-	    	String nombreArchivo = imagen.getName();
-	        String rutaMiniatura = generarMiniatura(imagen.getAbsolutePath(), nombreArchivo, imagen);
-
-	        // Guardar en BD
-
-        	Date fecha = (Date) metadata.get("Fecha");
-        	LocalDateTime fechaBBDD = null;
-	        if (fecha != null) {
-	        	fechaBBDD = fecha.toInstant()
-                        .atZone(ZoneId.systemDefault())       // Convierte a la zona horaria del sistema
-                        .toLocalDateTime();                   // Obtiene LocalDateTime
-	        }
-	        imagenExistente.setFecha(fechaBBDD);
-	        imagenExistente.setThumbnailUrl(rutaMiniatura);
-	        imagenExistente.setMetadata(metadata);
-	        imagenExistente.setUsuario(usuario);  // Asociamos la imagen al usuario
-	
-	        imagenRepository.save(imagenExistente);
-	            
-	        log.info("Imagen actualizada");
-	        return true;
-    	} catch (Exception e) {
-			log.error("Error al actualizar la imagen: " + imagen.getAbsolutePath());
-			return false;
-		}
-    	
-    }
 	
     private boolean actualizarImagenIA(File imagen, Image imagenExistente, Usuario usuario){
       
@@ -397,7 +358,7 @@ public class CargaImagenService {
 	    String rutaMiniatura = Paths.get(carpetaMiniaturas, "thumb_" + nombreArchivo).toString();
 
 	    Thumbnails.of(imagen)
-	              .size(600, 600)      // Tamaño de la miniatura
+	              .size(720, 720)      // Tamaño de la miniatura
 	              .outputQuality(0.7)  // Reducir calidad para optimizar
 	              .toFile(new File(rutaMiniatura));
 
