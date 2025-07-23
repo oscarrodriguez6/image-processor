@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.imageProcessor.security.JwtFilter;
 
@@ -36,6 +37,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+	        .cors(cors -> cors.configurationSource(request -> {
+	            CorsConfiguration config = new CorsConfiguration();
+	            config.setAllowedOrigins(List.of("http://localhost:5173")); // Cambia por tu frontend
+	            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	            config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+	            config.setAllowCredentials(true);
+	            return config;
+	        }))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -43,18 +52,25 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/login", "/register", "/error").permitAll() // Permitir todas estas rutas sin autenticación
                 .requestMatchers("/usuarios/login").permitAll() // Permitir la API de login
                 .requestMatchers("/usuarios/registro").permitAll() // Permitir la API de login
-                .anyRequest().authenticated() // Proteger cualquier otra ruta
+                .requestMatchers("/uploads/miniaturas/**").permitAll() // Temporal para separación de aplicaciones viajes / fotos
+                // Permitir archivos estáticos de viajes (html, js, css, etc.)
+                .requestMatchers("/viajes/*.html", "/viajes/*.js", "/viajes/*.css", "/viajes/*.ico", "/viajes/assets/**").permitAll()
+                // Si usas rutas como /viajes/static/** o /static/**, añádelas también
+                .requestMatchers("/static/**").permitAll()
+                // El resto de /viajes/** sigue protegido
+                .requestMatchers("/viajes/**").authenticated()
+                 .anyRequest().authenticated() // Proteger cualquier otra ruta
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autorizado");
             })) // Maneja errores 403 correctamente
             .formLogin(form -> form.disable()) // Deshabilita el login automático de Spring
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-            .headers(headers -> headers
-                    .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin"))
-                    .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"))
-                );        
-
+//           .headers(headers -> headers
+//                    .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin"))
+//                    .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"))
+//                );        
+;
 	    return http.build();
     }
         

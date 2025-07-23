@@ -62,6 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7); // Quita "Bearer "
+        log.info("token: " + token);
         try {
             String email = jwtUtil.obtenerEmailDesdeToken(token);
 
